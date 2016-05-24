@@ -207,14 +207,14 @@ article.time-gain > table tr {
 	line-height: 2.3em;
 }
 
-article.time-gain > table tr:nth-child(odd) {
+article.time-gain > table > tbody > tr:nth-child(even) {
 	background-color: #d3e0eb;
 	border-width: 0.1em 0;
 	border-color: #b8cbe0;
 	border-style: solid;
 }
 
-article.time-gain > table th {
+article.time-gain > table > thead th {
 	color: #fff;
 	background-color: #0060a0;
 	border-width: 0.2em 0;
