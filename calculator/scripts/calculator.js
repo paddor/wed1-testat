@@ -49,7 +49,7 @@ function calc(a, b, op) {
   var op = "";
 
   // Redraws the display.
-  function display(_) {
+  function display() {
     document.getElementById("output").innerHTML = out + " " + op;
     document.getElementById("input").innerHTML = _in;
   }
@@ -72,7 +72,7 @@ function calc(a, b, op) {
   }
 
   // Clears the display.
-  function clear(_) {
+  function clear() {
     _in = "";
     out = "";
     op = "";
@@ -80,7 +80,7 @@ function calc(a, b, op) {
 
   // Calculates result using the registers and saves it back into the registers
   // to be shown.
-  function equal_pressed(_) {
+  function equal_pressed() {
     // without an operator, this is a no-op
     if (op === "") return;
 
