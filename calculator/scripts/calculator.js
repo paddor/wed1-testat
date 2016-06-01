@@ -56,8 +56,7 @@ function calc(a, b, op) {
 
   // Appends the number pressed.
   function number_pressed(ev) {
-    var num = ev.target.value;
-    _in += num;
+    _in += ev.target.value;
   }
 
   // Registers the operator pressed.
