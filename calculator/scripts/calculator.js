@@ -97,7 +97,8 @@ function clear() {
 
   // Appends the digit pressed.
   function digit_pressed(ev) {
-    append_digit(ev.target.value);
+    var digit = parseFloat(ev.target.value);
+    append_digit(digit);
   }
 
   // Registers the operator pressed.
