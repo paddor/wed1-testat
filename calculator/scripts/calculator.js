@@ -22,10 +22,6 @@ function calc() {
   if (a === null || b === null || op === null)
     throw new Error("Invalid calculation");
 
-  // parse input
-  a = parseFloat(a);
-  b = parseFloat(b);
-
 
   // NOTE: Due to moving a number from one register to the other, eventually b
   // is the first number entered, and a is the second.
@@ -54,7 +50,8 @@ function calc() {
 }
 
 function append_digit(d) {
-  a = (a !== null ? a : "") + d.toString();
+  a = (a !== null ? a : "") + String(d);
+  a = parseFloat(a);
 }
 
 // Sets the operator. Moves content of a to b if it was set.
