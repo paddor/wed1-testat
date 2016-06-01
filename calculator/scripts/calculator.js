@@ -3,6 +3,11 @@
  * core
  */
 
+// Calculates and returns the result of the numbers a and b using the operator
+// op. For invalid calculations, an Error is raised.
+//
+// Supported operators: + - * /
+// Returns the result.
 function calc(a, b, op) {
   a = parseFloat(a);
   b = parseFloat(b);
@@ -26,7 +31,7 @@ function calc(a, b, op) {
   }
 
   if (!isFinite(result) || isNaN(result))
-    return "Invalid calculation";
+    throw new Error("Invalid calculation");
 
   return result;
 }
@@ -36,49 +41,107 @@ function calc(a, b, op) {
 /**
  * UI
  */
-window.addEventListener("load", function() {
 
-  var _in = "", out = "", op = "";
-  var input_elem = document.getElementById("input"),
-     output_elem = document.getElementById("output");
+(function() {
+  // registers
+  var _in = "";
+  var out = "Welcome"; // greeting
+  var op = "";
 
-  output_elem.innerHTML = "Welcome";
+  // Redraws the display.
+  function display(_) {
+    document.getElementById("output").innerHTML = out + " " + op;
+    document.getElementById("input").innerHTML = _in;
+  }
 
-  document.addEventListener("click", function (ev) {
-    if (ev.target.tagName.toLowerCase() !== "button") return;
-    if (output_elem.innerHTML === "Welcome") output_elem.innerHTML = "";
+  // Appends the number pressed.
+  function number_pressed(ev) {
+    var num = ev.target.getAttribute("value");
+    _in += num;
+  }
 
-    switch(ev.target.attributes.getNamedItem("class").value) {
-      case "number":
-        _in += ev.target.attributes.getNamedItem("value").value;
-        break;
+  // Registers the operator pressed.
+  function operator_pressed(ev) {
+    op = ev.target.getAttribute("value");
 
-      case "operator":
-        op = ev.target.attributes.getNamedItem("value").value;
-        if (out === "") { out = _in; _in = ""; }
-        break;
+    // If this was the first number, move it to the first line of the display.
+    if (out === "") {
+      out = _in;
+      _in = "";
+    }
+  }
 
-      case "command":
-        var cmd = ev.target.attributes.getNamedItem("name").value;
+  // Clears the display.
+  function clear(_) {
+    _in = "";
+    out = "";
+    op = "";
+  }
 
-        if (cmd === "key-c") {
-          // clearing
-          _in = "", out = "", op = "";
-        } else {
-          // result wanted
-          if (op !== "") {
-            // operator present -- calculate result
-            _in = calc(out, _in, op), out = "", op = "";
-          } else {
-            // no operator present -- just show current input as output
-            out = _in, _in = "";
-          }
-        }
-        break;
+  // Calculates result using the registers and saves it back into the registers
+  // to be shown.
+  function equal_pressed(_) {
+    // without an operator, this is a no-op
+    if (op === "") return;
+
+    try {
+      _in = calc(out, _in, op);
+      out = "";
+    } catch(ex) {
+      out = ex.message;
+    } finally {
+      op = "";
+    }
+  }
+
+  // Removes the greeting.
+  function remove_greeting() {
+    // unsubscribe to reduce cycles wasted
+    var i, buttons;
+    buttons = document.querySelectorAll("button");
+    for (i = 0; i < buttons.length; i++) {
+      buttons[i].removeEventListener("click", remove_greeting);
     }
 
-    //display the output
-    input_elem.innerHTML = _in;
-    output_elem.innerHTML = out + " " + op;
+    // remove greeting
+    out = "";
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    var i, buttons;
+    display(); // show greeting
+
+    /*
+     * NOTE: This relies on DOM Level 3 Events, namely the correct order of
+     * firing them, which is well supported in common browsers.
+     */
+
+    // remove greeting on any button clicked
+    buttons = document.querySelectorAll("button");
+    for (i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener("click", remove_greeting);
+    }
+
+    // subscribe to events for numbers clicked
+    buttons = document.querySelectorAll("button.number");
+    for (i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener("click", number_pressed);
+    }
+
+    // subscribe to events for operators clicked
+    buttons = document.querySelectorAll("button.operator");
+    for (i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener("click", operator_pressed);
+    }
+
+    // subscribe to events for commands clicked
+    document.getElementById("key-c").addEventListener("click", clear);
+    document.getElementById("key-=").addEventListener("click", equal_pressed);
+
+    // redraw the display on any button clicked
+    buttons = document.querySelectorAll("button");
+    for (i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener("click", display);
+    }
   });
-});
+})();
