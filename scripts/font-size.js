@@ -1,14 +1,19 @@
 'use strict';
-window.addEventListener('load', function () {
-  var fontSlider = document.getElementById('font-slider');
-  document.getElementById('font-size-form').addEventListener('change', function () {
-    // get desired size
-    var fontSize = (fontSlider.valueOf().value)/10;
+(function() {
+  window.addEventListener('DOMContentLoaded', function() {
+    var font_slider = document.getElementById('font-slider');
+    var font_size_output = document.getElementById('font-size');
+    var font_size_form = document.getElementById('font-size-form');
 
-    // change font size on root element
-    document.getElementsByTagName("html")[0].style.fontSize = fontSize + 'rem';
+    font_size_form.addEventListener('change', function() {
+      // get desired size
+      var new_size = font_slider.value / 10;
 
-    // show new value
-    document.getElementById('font-size').innerHTML = fontSize;
+      // change font size on root element
+      document.body.style.fontSize = new_size + 'rem';
+
+      // show new value
+      font_size_output.innerHTML = new_size;
+    });
   });
-});
+})();
