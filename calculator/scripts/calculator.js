@@ -102,8 +102,8 @@ function clear() {
   }
 
   // Registers the operator pressed.
-  function operator_pressed(ev) {
-    set_op(ev.target.value);
+  function operator_pressed(event) {
+    set_op(event.target.value);
   }
 
   // Calculates result using the registers and saves it back into the registers
