@@ -87,7 +87,7 @@ function clear() {
       first_line = greeting;
     } else {
       first_line = b !== null ? b : "";
-      if (op !== null) first_line += op;
+      if (op !== null) first_line += " " + op;
     }
     second_line = a !== null ? a : "";
 
