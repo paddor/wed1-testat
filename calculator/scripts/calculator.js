@@ -125,19 +125,19 @@ function clear() {
   }
 
   document.addEventListener("DOMContentLoaded", function() {
-    var i, buttons;
+    var buttons;
 
     // subscribe to events for digits clicked
     buttons = document.querySelectorAll("button.number");
-    for (i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener("click", digit_pressed);
-    }
+    Array.prototype.forEach.call(buttons, function(button) {
+      button.addEventListener("click", digit_pressed);
+    });
 
     // subscribe to events for operators clicked
     buttons = document.querySelectorAll("button.operator");
-    for (i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener("click", operator_pressed);
-    }
+    Array.prototype.forEach.call(buttons, function(button) {
+      button.addEventListener("click", operator_pressed);
+    });
 
     // subscribe to events for commands clicked
     document.getElementById("key-c").addEventListener("click", c_pressed);
@@ -145,9 +145,9 @@ function clear() {
 
     // redraw the display on any button clicked
     buttons = document.querySelectorAll("button");
-    for (i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener("click", function() { display() });
-    }
+    Array.prototype.forEach.call(buttons, function(button) {
+      button.addEventListener("click", function() { display() });
+    });
 
     // show greeting
     display("Welcome");
