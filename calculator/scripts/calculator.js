@@ -3,28 +3,44 @@
  * core
  */
 
-// Calculates and returns the result of the numbers a and b using the operator
-// op. For invalid calculations, an Error is raised.
+
+// registers
+var a = null;
+var b = null;
+var op = null;
+
+// Calculates the result of the numbers a and b using the operator
+// op. Result is stored back into a. For invalid calculations, an Error is
+// raised.
+//
 //
 // Supported operators: + - * /
-// Returns the result.
-function calc(a, b, op) {
+function calc() {
   var result;
+
+  // check input
+  if (a === null || b === null || op === null)
+    throw new Error("Invalid calculation");
+
+  // parse input
   a = parseFloat(a);
   b = parseFloat(b);
 
+
+  // NOTE: Due to moving a number from one register to the other, eventually b
+  // is the first number entered, and a is the second.
   switch (op) {
     case "+":
-      result = a + b;
+      result = b + a;
       break;
     case "-":
-      result = a - b;
+      result = b - a;
       break;
     case "*":
-      result = a * b;
+      result = b * a;
       break;
     case "/":
-      result = a / b;
+      result = b / a;
       break;
     default:
       result = NaN;
@@ -33,7 +49,25 @@ function calc(a, b, op) {
   if (!isFinite(result) || isNaN(result))
     throw new Error("Invalid calculation");
 
-  return result;
+  // update registers
+  a = result, b = op = null;
+}
+
+function append_digit(d) {
+  a = (a !== null ? a : "") + d.toString();
+}
+
+// Sets the operator. Moves content of a to b if it was set.
+function set_op(_op) {
+  op = _op;
+
+  // Iff a is set, move it to the first line of the display.
+  if (a && !b) b = a, a = null;
+}
+
+// Clears the registers.
+function clear() {
+  a = b = op = null;
 }
 
 
@@ -43,88 +77,62 @@ function calc(a, b, op) {
  */
 
 (function() {
-  // registers
-  var _in = "";
-  var out = "Welcome"; // greeting
-  var op = "";
+  var error;
 
   // Redraws the display.
-  function display() {
-    document.getElementById("output").innerHTML = out + " " + op;
-    document.getElementById("input").innerHTML = _in;
+  function display(greeting) {
+    var first_line;
+    var second_line;
+
+    if (error) {
+      first_line = error;
+    } else if (greeting) {
+      first_line = greeting;
+    } else {
+      first_line = b !== null ? b : "";
+      if (op !== null) first_line += op;
+    }
+    second_line = a !== null ? a : "";
+
+    document.getElementById("output").innerHTML = first_line;
+    document.getElementById("input").innerHTML = second_line;
   }
 
-  // Appends the number pressed.
-  function number_pressed(ev) {
-    _in += ev.target.value;
+  // Appends the digit pressed.
+  function digit_pressed(ev) {
+    append_digit(ev.target.value);
   }
 
   // Registers the operator pressed.
   function operator_pressed(ev) {
-    op = ev.target.value;
-
-    // If this was the first number, move it to the first line of the display.
-    if (out === "") {
-      out = _in;
-      _in = "";
-    }
-  }
-
-  // Clears the display.
-  function clear() {
-    _in = "";
-    out = "";
-    op = "";
+    set_op(ev.target.value);
   }
 
   // Calculates result using the registers and saves it back into the registers
   // to be shown.
   function equal_pressed() {
     // without an operator, this is a no-op
-    if (op === "") return;
+    if (!op) return;
 
     try {
-      _in = calc(out, _in, op);
-      out = "";
+      calc();
     } catch(ex) {
-      out = ex.message;
-    } finally {
-      op = "";
+      error = ex.message;
     }
   }
 
-  // Removes the greeting.
-  function remove_greeting() {
-    // unsubscribe to reduce cycles wasted
-    var i, buttons;
-    buttons = document.querySelectorAll("button");
-    for (i = 0; i < buttons.length; i++) {
-      buttons[i].removeEventListener("click", remove_greeting);
-    }
-
-    // remove greeting
-    out = "";
+  function c_pressed() {
+    clear();
+    error = null;
   }
 
   document.addEventListener("DOMContentLoaded", function() {
     var i, buttons;
-    display(); // show greeting
 
-    /*
-     * NOTE: This relies on DOM Level 3 Events, namely the correct order of
-     * firing them, which is well supported in common browsers.
-     */
-
-    // remove greeting on any button clicked
-    buttons = document.querySelectorAll("button");
-    for (i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener("click", remove_greeting);
-    }
-
-    // subscribe to events for numbers clicked
+    // subscribe to events for digits clicked
     buttons = document.querySelectorAll("button.number");
     for (i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener("click", number_pressed);
+      buttons[i].addEventListener("click", digit_pressed);
     }
 
     // subscribe to events for operators clicked
@@ -134,13 +142,16 @@ function calc(a, b, op) {
     }
 
     // subscribe to events for commands clicked
-    document.getElementById("key-c").addEventListener("click", clear);
+    document.getElementById("key-c").addEventListener("click", c_pressed);
     document.getElementById("key-=").addEventListener("click", equal_pressed);
 
     // redraw the display on any button clicked
     buttons = document.querySelectorAll("button");
     for (i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener("click", display);
+      buttons[i].addEventListener("click", function() { display() });
     }
+
+    // show greeting
+    display("Welcome");
   });
 })();
