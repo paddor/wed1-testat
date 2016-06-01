@@ -56,13 +56,13 @@ function calc(a, b, op) {
 
   // Appends the number pressed.
   function number_pressed(ev) {
-    var num = ev.target.getAttribute("value");
+    var num = ev.target.value;
     _in += num;
   }
 
   // Registers the operator pressed.
   function operator_pressed(ev) {
-    op = ev.target.getAttribute("value");
+    op = ev.target.value;
 
     // If this was the first number, move it to the first line of the display.
     if (out === "") {
