@@ -9,9 +9,9 @@
 // Supported operators: + - * /
 // Returns the result.
 function calc(a, b, op) {
+  var result;
   a = parseFloat(a);
   b = parseFloat(b);
-  var result;
 
   switch (op) {
     case "+":
